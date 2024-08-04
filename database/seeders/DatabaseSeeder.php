@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Annonce;
@@ -52,7 +51,9 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            if (Permission::where('name', $permission)->doesntExist()) {
+                Permission::create(['name' => $permission]);
+            }
         }
 
         // Créer les rôles et leur assigner des permissions
@@ -241,9 +242,7 @@ class DatabaseSeeder extends Seeder
                 'student_uuid' => $student->uuid,
             ]);
         }
-        
-        
-        
+
         // Créer les paiements pour les étudiants
         $students = Student::all();
         $types = ['mensualite', 'inscription', 'assurance', 'produit', 'diplome'];
@@ -274,3 +273,4 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
+
