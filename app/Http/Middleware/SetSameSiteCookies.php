@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Cookie;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class SetSameSiteCookies
 {
@@ -18,11 +18,27 @@ class SetSameSiteCookies
     {
         $response = $next($request);
 
-        if (method_exists($response, 'withCookie')) {
-            $response->withCookie(cookie('XSRF-TOKEN', $request->cookie('XSRF-TOKEN'), 0, null, null, true, true, false, 'None'));
+        if ($response instanceof \Illuminate\Http\Response) {
+            $cookie = $response->headers->getCookies()[0];
+
+            $secure = config('session.secure') ?? false;
+            $sameSite = config('session.same_site') ?? 'Lax';
+
+            $newCookie = new Cookie(
+                $cookie->getName(),
+                $cookie->getValue(),
+                $cookie->getExpiresTime(),
+                $cookie->getPath(),
+                $cookie->getDomain(),
+                $secure,
+                $cookie->isHttpOnly(),
+                false,
+                $sameSite
+            );
+
+            $response->headers->setCookie($newCookie);
         }
 
         return $response;
     }
 }
-
