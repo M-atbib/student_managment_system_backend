@@ -63,4 +63,6 @@ return [
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
     ],
 
+
+    'same_site' => 'none',
 ];
