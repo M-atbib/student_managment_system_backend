@@ -135,26 +135,26 @@ class DatabaseSeeder extends Seeder
             }
 
             // Ajouter deux annonces pour chaque établissement
-            for ($j = 1; $j <= 2; $j++) {
-                Annonce::create([
-                    'uuid' => (string) Str::uuid(),
-                    'text' => 'Annonce ' . $j . ' for ' . $etablissement->name,
-                    'etab_uuid' => $etablissement->uuid,
-                    'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
-                    'date_validite' => now()->addMonths(rand(1, 12)),
-                ]);
-            }
+            // for ($j = 1; $j <= 2; $j++) {
+            //     Annonce::create([
+            //         'uuid' => (string) Str::uuid(),
+            //         'text' => 'Annonce ' . $j . ' for ' . $etablissement->name,
+            //         'etab_uuid' => $etablissement->uuid,
+            //         'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
+            //         'date_validite' => now()->addMonths(rand(1, 12)),
+            //     ]);
+            // }
         }
 
         // Créer les horaires pour chaque groupe
-        foreach ($groups as $group) {
-            Timetable::create([
-                'uuid' => (string) Str::uuid(),
-                'title' => 'Timetable for ' . $group->name,
-                'group_uuid' => $group->uuid,
-                'name_file' => 'timetable_' . $group->uuid . '.pdf'
-            ]);
-        }
+        // foreach ($groups as $group) {
+        //     Timetable::create([
+        //         'uuid' => (string) Str::uuid(),
+        //         'title' => 'Timetable for ' . $group->name,
+        //         'group_uuid' => $group->uuid,
+        //         'name_file' => 'timetable_' . $group->uuid . '.pdf'
+        //     ]);
+        // }
 
         // Créer 3 utilisateurs avec les rôles owner, coiffure, et esthetique
         $roles = ['owner', 'coiffure', 'esthetique'];
@@ -173,104 +173,104 @@ class DatabaseSeeder extends Seeder
         }
 
         // Créer 100 étudiants avec le rôle 'student' et assigner à des groupes aléatoires
-        $groups = Group::all();
-        foreach (range(1, 100) as $index) {
-            $group = $groups->random();
-            $password = 'password12345';
+        // $groups = Group::all();
+        // foreach (range(1, 100) as $index) {
+        //     $group = $groups->random();
+        //     $password = 'password12345';
 
-            // Generate the inscription number
-            $currentYear = Carbon::now()->year;
-            $uuid = (string) Str::uuid();
-            $inscription_number = $uuid . '/' . $currentYear;
+        //     // Generate the inscription number
+        //     $currentYear = Carbon::now()->year;
+        //     $uuid = (string) Str::uuid();
+        //     $inscription_number = $uuid . '/' . $currentYear;
 
-            $student = Student::create([
-                'uuid' => (string) Str::uuid(),
-                'inscription_number' => $inscription_number,
-                'CIN' => 'CIN-' . Str::random(5),
-                'id_massar' => 'IDM-' . Str::random(5),
-                'full_name' => 'Student ' . $index,
-                'birth_date' => now()->subYears(rand(18, 25)),
-                'birth_place' => 'Place ' . rand(1, 100),
-                'gender' => rand(0, 1) ? 'Male' : 'Female',
-                'school_level' => 'Level ' . rand(1, 5),
-                'address' => 'Address ' . rand(1, 100),
-                'phone_number' => '06' . rand(10000000, 99999999),
-                'email' => 'student' . $index . '@example.com',
-                'password' => Hash::make($password),
-                'plain_password' => $password,
-                'responsable' => json_encode([
-                    [
-                        'nom' => 'Responsable ' . $index,
-                        'nature' => rand(0, 1) ? 'mere' : 'pere',
-                        'num' => '06' . rand(10000000, 99999999)
-                    ],
-                    [
-                        'nom' => 'Responsable ' . $index,
-                        'nature' => rand(0, 1) ? 'mere' : 'pere',
-                        'num' => '06' . rand(10000000, 99999999)
-                    ]
-                ]),
-                'photo' => 'photo' . $index . '.jpg',
-                'training_duration' => 'Duration ' . rand(1, 3) . ' years',
-                'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
-                'filières_formation' => 'Formation ' . rand(1, 3),
-                'training_level' => 'Level ' . rand(1, 5),
-                'group_uuid' => $group->uuid,
-                'monthly_amount' => rand(1000, 2000),
-                'registration_fee' => rand(100, 500),
-                'product' => rand(500, 2000),
-                'frais_diplôme' => rand(200, 500),
-                'annual_amount' => rand(5000, 10000),
-                'status' => rand(0, 1) ? 'active' : 'archive',
-                'date_start_at' => now(),
-                'date_fin_at' => now()->addYears(2),
-            ]);
+        //     $student = Student::create([
+        //         'uuid' => (string) Str::uuid(),
+        //         'inscription_number' => $inscription_number,
+        //         'CIN' => 'CIN-' . Str::random(5),
+        //         'id_massar' => 'IDM-' . Str::random(5),
+        //         'full_name' => 'Student ' . $index,
+        //         'birth_date' => now()->subYears(rand(18, 25)),
+        //         'birth_place' => 'Place ' . rand(1, 100),
+        //         'gender' => rand(0, 1) ? 'Male' : 'Female',
+        //         'school_level' => 'Level ' . rand(1, 5),
+        //         'address' => 'Address ' . rand(1, 100),
+        //         'phone_number' => '06' . rand(10000000, 99999999),
+        //         'email' => 'student' . $index . '@example.com',
+        //         'password' => Hash::make($password),
+        //         'plain_password' => $password,
+        //         'responsable' => json_encode([
+        //             [
+        //                 'nom' => 'Responsable ' . $index,
+        //                 'nature' => rand(0, 1) ? 'mere' : 'pere',
+        //                 'num' => '06' . rand(10000000, 99999999)
+        //             ],
+        //             [
+        //                 'nom' => 'Responsable ' . $index,
+        //                 'nature' => rand(0, 1) ? 'mere' : 'pere',
+        //                 'num' => '06' . rand(10000000, 99999999)
+        //             ]
+        //         ]),
+        //         'photo' => 'photo' . $index . '.jpg',
+        //         'training_duration' => 'Duration ' . rand(1, 3) . ' years',
+        //         'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
+        //         'filières_formation' => 'Formation ' . rand(1, 3),
+        //         'training_level' => 'Level ' . rand(1, 5),
+        //         'group_uuid' => $group->uuid,
+        //         'monthly_amount' => rand(1000, 2000),
+        //         'registration_fee' => rand(100, 500),
+        //         'product' => rand(500, 2000),
+        //         'frais_diplôme' => rand(200, 500),
+        //         'annual_amount' => rand(5000, 10000),
+        //         'status' => rand(0, 1) ? 'active' : 'archive',
+        //         'date_start_at' => now(),
+        //         'date_fin_at' => now()->addYears(2),
+        //     ]);
 
-            $student->assignRole('student');
+        //     $student->assignRole('student');
 
-            // Ajouter une remarque pour chaque étudiant
-            Remarque::create([
-                'uuid' => (string) Str::uuid(),
-                'text' => 'Remarque for ' . $student->full_name,
-                'student_uuid' => $student->uuid,
-            ]);
+        //     // Ajouter une remarque pour chaque étudiant
+        //     Remarque::create([
+        //         'uuid' => (string) Str::uuid(),
+        //         'text' => 'Remarque for ' . $student->full_name,
+        //         'student_uuid' => $student->uuid,
+        //     ]);
 
-            // Ajouter un document pour chaque étudiant
-            Document::create([
-                'uuid' => (string) Str::uuid(),
-                'name_file' => 'Document_' . $student->full_name . '.pdf',
-                'student_uuid' => $student->uuid,
-            ]);
-        }
+        //     // Ajouter un document pour chaque étudiant
+        //     Document::create([
+        //         'uuid' => (string) Str::uuid(),
+        //         'name_file' => 'Document_' . $student->full_name . '.pdf',
+        //         'student_uuid' => $student->uuid,
+        //     ]);
+        // }
 
-        // Créer les paiements pour les étudiants
-        $students = Student::all();
-        $types = ['mensualite', 'inscription', 'assurance', 'produit', 'diplome'];
-        $methode = ['espece', 'cheque', 'virement'];
+        // // Créer les paiements pour les étudiants
+        // $students = Student::all();
+        // $types = ['mensualite', 'inscription', 'assurance', 'produit', 'diplome'];
+        // $methode = ['espece', 'cheque', 'virement'];
 
-        foreach ($students as $student) {
-            for ($i = 1; $i <= 10; $i++) {
-                Payment::create([
-                    'uuid' => (string) Str::uuid(),
-                    'student_uuid' => $student->uuid,
-                    'type' => $types[array_rand($types)],
-                    'methode' => $types[array_rand($methode)],
-                    'montant' => rand(100, 1000),
-                    'date_payment' => now()->timezone('Africa/Casablanca')->subDays(rand(0, 365))->format('Y-m-d'),
-                ]);
-            }
-        }
-        foreach ($students as $student) {
-            Presence::create([
-                'uuid' => (string) Str::uuid(),
-                'title' => 'Presence ' . $index,
-                'type' => 'attendance',
-                'justification' => rand(0, 1) ? true : false,
-                'remarque' => 'Remarque for ' . $student->full_name,
-                'date' => now()->subDays(rand(0, 30))->format('Y-m-d'),
-                'student_uuid' => $student->uuid
-            ]);
-        }
+        // foreach ($students as $student) {
+        //     for ($i = 1; $i <= 10; $i++) {
+        //         Payment::create([
+        //             'uuid' => (string) Str::uuid(),
+        //             'student_uuid' => $student->uuid,
+        //             'type' => $types[array_rand($types)],
+        //             'methode' => $types[array_rand($methode)],
+        //             'montant' => rand(100, 1000),
+        //             'date_payment' => now()->timezone('Africa/Casablanca')->subDays(rand(0, 365))->format('Y-m-d'),
+        //         ]);
+        //     }
+        // }
+        // foreach ($students as $student) {
+        //     Presence::create([
+        //         'uuid' => (string) Str::uuid(),
+        //         'title' => 'Presence ' . $index,
+        //         'type' => 'attendance',
+        //         'justification' => rand(0, 1) ? true : false,
+        //         'remarque' => 'Remarque for ' . $student->full_name,
+        //         'date' => now()->subDays(rand(0, 30))->format('Y-m-d'),
+        //         'student_uuid' => $student->uuid
+        //     ]);
+        // }
     }
 }
 
