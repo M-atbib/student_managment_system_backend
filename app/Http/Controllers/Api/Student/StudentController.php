@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
 use App\Models\Group;
 use App\Models\Student;
-use App\Models\Student_NumInscription;
+use App\Models\StudentNumInscription;
 use Illuminate\Support\Str;
 use App\Responses\student\StudentResponse;
 use Carbon\Carbon;
@@ -119,9 +119,9 @@ class StudentController extends Controller
          
             $roles = $request->user()->roles->pluck('name');
             if ($roles->contains('owner')) {
-                $numInscription = Student_NumInscription::where('etab_uuid',$etab_uuid)->firstOrFail();
+                $numInscription = StudentNumInscription::where('etab_uuid',$etab_uuid)->firstOrFail();
             }else{
-                $numInscription = Student_NumInscription::where('etab_uuid',$request->user()->branch_uuid)->firstOrFail();
+                $numInscription = StudentNumInscription::where('etab_uuid',$request->user()->branch_uuid)->firstOrFail();
             }
             $currentYear = Carbon::now()->year;
             $training_level = strtoupper(mb_substr($request->training_level, 0, 1));
