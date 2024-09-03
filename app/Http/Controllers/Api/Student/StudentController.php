@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Student;
 
-use App\DataTransferObjects\Student\StudentDataObject;
+use App\DataTransferObjects\student\StudentDataObject;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentRequest;
 use App\Models\Group;

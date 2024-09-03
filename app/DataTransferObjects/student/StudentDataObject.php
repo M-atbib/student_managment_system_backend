@@ -2,7 +2,7 @@
 
 
 declare(strict_types=1);
-namespace App\DataTransferObjects\Student;
+namespace App\DataTransferObjects\student;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
