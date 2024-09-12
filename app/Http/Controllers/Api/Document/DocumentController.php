@@ -21,7 +21,9 @@ class DocumentController extends Controller
             $file = $request->file('name_file');
             $uniqueId = uniqid();
             $fileName = $uniqueId . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('uploads/student/document', $fileName, 'public');
+            $filePath = 'uploads/student/document/' . $fileName;
+
+            Storage::disk('b2')->put($filePath, file_get_contents($file));
 
             $data = new DocumentDataObject($filePath, $request->student_uuid);
 
@@ -46,7 +48,7 @@ class DocumentController extends Controller
 
         try {
             $document = Document::where('uuid', $document_uuid)->firstOrFail();
-            Storage::disk('public')->delete($document->name_file);
+            Storage::disk('b2')->delete($document->name_file);
             $document->delete();
 
             return response()->json(['message' => 'Document supprimée avec succès'], 200);

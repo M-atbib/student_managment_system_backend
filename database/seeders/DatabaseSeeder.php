@@ -1,17 +1,9 @@
 <?php
 namespace Database\Seeders;
 
-use App\Models\Annonce;
-use App\Models\Document;
 use App\Models\Etablissement;
 use App\Models\Group;
-use App\Models\Payment;
-use App\Models\Presence;
-use App\Models\Remarque;
-use App\Models\Student;
-use App\Models\Timetable;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -118,159 +110,92 @@ class DatabaseSeeder extends Seeder
 
         $studentRole = Role::create(['name' => 'student']);
         $studentRole->givePermissionTo([
-            'view myinfo','view annonce',
+            'view myinfo', 'view annonce',
         ]);
 
-        // Créer 5 établissements
-        $etablissements = Etablissement::factory()->count(5)->create();
+        // Créer les établissements et leurs groupes
+        $etablissements = [
+            'Elhouria Coiffure',
+            'Elhouria Esthetique',
+            'Group Elhouria Esthetique Gueliz',
+            'Atlas Academy Coiffure Gueliz',
+        ];
 
-        $groups = collect();
-        foreach ($etablissements as $etablissement) {
-            for ($i = 1; $i <= 3; $i++) {
-                $groups->push(Group::create([
+        foreach ($etablissements as $etablissementName) {
+            DB::transaction(function () use ($etablissementName) {
+                $etablissement = Etablissement::create([
                     'uuid' => (string) Str::uuid(),
-                    'name' => 'Group ' . $i,
-                    'etab_uuid' => $etablissement->uuid
-                ]));
-            }
+                    'branch_name' => $etablissementName,
+                    'branch_logo' => 'vide.png',
+                ]);
 
-            // Ajouter deux annonces pour chaque établissement
-            // for ($j = 1; $j <= 2; $j++) {
-            //     Annonce::create([
-            //         'uuid' => (string) Str::uuid(),
-            //         'text' => 'Annonce ' . $j . ' for ' . $etablissement->name,
-            //         'etab_uuid' => $etablissement->uuid,
-            //         'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
-            //         'date_validite' => now()->addMonths(rand(1, 12)),
-            //     ]);
-            // }
-        }
-
-        // Créer les horaires pour chaque groupe
-        // foreach ($groups as $group) {
-        //     Timetable::create([
-        //         'uuid' => (string) Str::uuid(),
-        //         'title' => 'Timetable for ' . $group->name,
-        //         'group_uuid' => $group->uuid,
-        //         'name_file' => 'timetable_' . $group->uuid . '.pdf'
-        //     ]);
-        // }
-
-        // Créer 3 utilisateurs avec les rôles owner, coiffure, et esthetique
-        $roles = ['owner', 'coiffure', 'esthetique'];
-        foreach ($roles as $role) {
-            DB::transaction(function () use ($role) {
-                $user = User::factory()->create();
-                $user->assignRole($role);
-                if ($role == 'owner') {
-                    $user->branch_uuid = null;
-                }else{
-                    $user->branch_uuid = Etablissement::inRandomOrder()->first()->uuid;
+                for ($i = 1; $i <= 3; $i++) {
+                    Group::create([
+                        'uuid' => (string) Str::uuid(),
+                        'name' => 'Group ' . $i,
+                        'etab_uuid' => $etablissement->uuid,
+                    ]);
                 }
-                $user->save();
-
             });
         }
 
-        // Créer 100 étudiants avec le rôle 'student' et assigner à des groupes aléatoires
-        // $groups = Group::all();
-        // foreach (range(1, 100) as $index) {
-        //     $group = $groups->random();
-        //     $password = 'password12345';
+        // Assign roles to specific users and link them to an etablissement (branch)
+        $users = [
+            [
+                'name' => 'Atbib Larbi', 
+                'email' => 'atbiblarbi@groupeelhourria.com', 
+                'role' => 'owner', 
+                'branch' => 'Elhouria Coiffure',
+                'password' => 'atbiblarbi123',
 
-        //     // Generate the inscription number
-        //     $currentYear = Carbon::now()->year;
-        //     $uuid = (string) Str::uuid();
-        //     $inscription_number = $uuid . '/' . $currentYear;
+            ], 
+            [
+                'name' => 'El mallouki Atiqa', 
+                'email' => 'elmalloukiatiqa@groupeelhourria.com', 
+                'role' => 'coiffure', 
+                'branch' => 'Atlas Academy Coiffure Gueliz',
+                'password' => 'elmalloukiatiq123',
+            ],
+            [
+                'name' => 'Hadda ali Nadia', 
+                'email' => 'haddaalinadia@groupeelhourria.com', 
+                'role' => 'coiffure', 
+                'branch' => 'Elhouria Coiffure',
+                'password' => 'haddaalinadia123',
+            ],
+            [
+                'name' => 'Ben tebaa Atika', 
+                'email' => 'bentebaaatika@groupeelhourria.com', 
+                'role' => 'esthetique', 
+                'branch' => 'Elhouria Esthetique',
+                'password' => 'bentebaaatika123',
 
-        //     $student = Student::create([
-        //         'uuid' => (string) Str::uuid(),
-        //         'inscription_number' => $inscription_number,
-        //         'CIN' => 'CIN-' . Str::random(5),
-        //         'id_massar' => 'IDM-' . Str::random(5),
-        //         'full_name' => 'Student ' . $index,
-        //         'birth_date' => now()->subYears(rand(18, 25)),
-        //         'birth_place' => 'Place ' . rand(1, 100),
-        //         'gender' => rand(0, 1) ? 'Male' : 'Female',
-        //         'school_level' => 'Level ' . rand(1, 5),
-        //         'address' => 'Address ' . rand(1, 100),
-        //         'phone_number' => '06' . rand(10000000, 99999999),
-        //         'email' => 'student' . $index . '@example.com',
-        //         'password' => Hash::make($password),
-        //         'plain_password' => $password,
-        //         'responsable' => json_encode([
-        //             [
-        //                 'nom' => 'Responsable ' . $index,
-        //                 'nature' => rand(0, 1) ? 'mere' : 'pere',
-        //                 'num' => '06' . rand(10000000, 99999999)
-        //             ],
-        //             [
-        //                 'nom' => 'Responsable ' . $index,
-        //                 'nature' => rand(0, 1) ? 'mere' : 'pere',
-        //                 'num' => '06' . rand(10000000, 99999999)
-        //             ]
-        //         ]),
-        //         'photo' => 'photo' . $index . '.jpg',
-        //         'training_duration' => 'Duration ' . rand(1, 3) . ' years',
-        //         'sector' => rand(0, 1) ? 'coiffure' : 'esthetique',
-        //         'filières_formation' => 'Formation ' . rand(1, 3),
-        //         'training_level' => 'Level ' . rand(1, 5),
-        //         'group_uuid' => $group->uuid,
-        //         'monthly_amount' => rand(1000, 2000),
-        //         'registration_fee' => rand(100, 500),
-        //         'product' => rand(500, 2000),
-        //         'frais_diplôme' => rand(200, 500),
-        //         'annual_amount' => rand(5000, 10000),
-        //         'status' => rand(0, 1) ? 'active' : 'archive',
-        //         'date_start_at' => now(),
-        //         'date_fin_at' => now()->addYears(2),
-        //     ]);
+            ],
+            [
+                'name' => 'Mach zohra', 
+                'email' => 'machzohra@groupeelhourria.com', 
+                'role' => 'esthetique', 
+                'branch' => 'Group Elhouria Esthetique Gueliz',
+                'password' => 'bentebaaatika123',
+            ],
+        ];
 
-        //     $student->assignRole('student');
+        foreach ($users as $userData) {
+            DB::transaction(function () use ($userData) {
+                // Fetch etablissement UUID for branch
+                $etablissement = Etablissement::where('branch_name', $userData['branch'])->first();
+                
+                $user = User::create([
+                    'uuid' => (string) Str::uuid(),
+                    'name' => $userData['name'],
+                    'email' => $userData['email'],
+                    'password' => Hash::make($userData['password']),
+                    'branch_uuid' => $etablissement->uuid,
+                ]);
 
-        //     // Ajouter une remarque pour chaque étudiant
-        //     Remarque::create([
-        //         'uuid' => (string) Str::uuid(),
-        //         'text' => 'Remarque for ' . $student->full_name,
-        //         'student_uuid' => $student->uuid,
-        //     ]);
-
-        //     // Ajouter un document pour chaque étudiant
-        //     Document::create([
-        //         'uuid' => (string) Str::uuid(),
-        //         'name_file' => 'Document_' . $student->full_name . '.pdf',
-        //         'student_uuid' => $student->uuid,
-        //     ]);
-        // }
-
-        // // Créer les paiements pour les étudiants
-        // $students = Student::all();
-        // $types = ['mensualite', 'inscription', 'assurance', 'produit', 'diplome'];
-        // $methode = ['espece', 'cheque', 'virement'];
-
-        // foreach ($students as $student) {
-        //     for ($i = 1; $i <= 10; $i++) {
-        //         Payment::create([
-        //             'uuid' => (string) Str::uuid(),
-        //             'student_uuid' => $student->uuid,
-        //             'type' => $types[array_rand($types)],
-        //             'methode' => $types[array_rand($methode)],
-        //             'montant' => rand(100, 1000),
-        //             'date_payment' => now()->timezone('Africa/Casablanca')->subDays(rand(0, 365))->format('Y-m-d'),
-        //         ]);
-        //     }
-        // }
-        // foreach ($students as $student) {
-        //     Presence::create([
-        //         'uuid' => (string) Str::uuid(),
-        //         'title' => 'Presence ' . $index,
-        //         'type' => 'attendance',
-        //         'justification' => rand(0, 1) ? true : false,
-        //         'remarque' => 'Remarque for ' . $student->full_name,
-        //         'date' => now()->subDays(rand(0, 30))->format('Y-m-d'),
-        //         'student_uuid' => $student->uuid
-        //     ]);
-        // }
+                // Assign role to user
+                $user->assignRole($userData['role']);
+            });
+        }
     }
 }
-

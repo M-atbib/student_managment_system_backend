@@ -36,6 +36,14 @@ return [
             'throw' => false,
         ],
 
+        'b2' => [
+            'driver'         => 'b2',
+            'accountId'      => env('BACKBLAZE_ACCOUNT_ID'),
+            'applicationKey' => env('BACKBLAZE_APPLICATION_KEY'),
+            'bucketName'     => env('BACKBLAZE_BUCKET_NAME'),
+            'bucketId'       => env('BACKBLAZE_BUCKET_ID'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
