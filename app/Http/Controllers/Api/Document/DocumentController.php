@@ -14,18 +14,20 @@ use Illuminate\Support\Str;
 class DocumentController extends Controller
 {
     public function store(DocumentRequest $request)
-    {
-        $this->authorize('manage document');
+{
+    $this->authorize('manage document');
 
-        try {
-            $file = $request->file('name_file');
-            $uniqueId = uniqid();
-            $fileName = $uniqueId . '_' . $file->getClientOriginalName();
-            $filePath = 'uploads/student/document/' . $fileName;
+    try {
+        $file = $request->file('name_file');
+        $originalFileName = $file->getClientOriginalName();
+        $sanitizedFileName = str_replace("\0", "", $originalFileName);
+        $uniqueId = uniqid();
+        $fileName = $uniqueId . '_' . $sanitizedFileName;
+        $filePath = 'uploads/student/document/' . $fileName;
 
-            Storage::disk('b2')->put($filePath, file_get_contents($file));
-
-            $data = new DocumentDataObject($filePath, $request->student_uuid);
+        $uploaded = Storage::disk('b2')->put($filePath, $file);
+       
+            $data = new DocumentDataObject($uploaded, $request->student_uuid);
 
             Document::create(array_merge(
                 ['uuid' => (string) Str::uuid()],
@@ -33,27 +35,37 @@ class DocumentController extends Controller
                 [
                     'created_at' => now()->timezone('Africa/Casablanca'),
                     'updated_at' => now()->timezone('Africa/Casablanca')
-                ]
-            ));
+            ]
+        ));
 
-            return response()->json(['message' => 'Document créé avec succès'], 201);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Erreur interne du serveur', 'error' => $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Document créé avec succès'], 201);
+    } catch (Exception $e) {
+        return response()->json(['message' => 'Erreur interne du serveur', 'error' => $e->getMessage()], 500);
     }
+}
+
 
     public function delete($document_uuid)
     {
-        $this->authorize('manage remarque');
+        $this->authorize('manage document');
 
         try {
             $document = Document::where('uuid', $document_uuid)->firstOrFail();
-            Storage::disk('b2')->delete($document->name_file);
-            $document->delete();
+            $fileUrl = $document->name_file; 
 
-            return response()->json(['message' => 'Document supprimée avec succès'], 200);
+            if (Storage::disk('b2')->exists($fileUrl)) {
+                $deleted = Storage::disk('b2')->delete($fileUrl);
+                if (!$deleted) {
+                    return response()->json(['message' => 'Échec de la suppression du fichier'], 500);
+                }
+                $document->delete();
+            } 
+
+           
+
+            return response()->json(['message' => 'Document supprimé avec succès'], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Document non trouvée'], 404);
+            return response()->json(['message' => 'Document non trouvé'], 404);
         } catch (Exception $e) {
             return response()->json(['message' => 'Erreur interne du serveur', 'error' => $e->getMessage()], 500);
         }

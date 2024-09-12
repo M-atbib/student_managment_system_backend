@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -103,28 +104,32 @@ class StudentController extends Controller
         }
     }
 
-    public function store(StudentRequest $request,$etab_uuid){
+    public function store(StudentRequest $request, $etab_uuid)
+    {
         $this->authorize('manage students');
 
         try {
+            $filePath = null;
             
-            $filePath=null;
-            if($request->file('photo')){
+            if ($request->file('photo')) {
                 $file = $request->file('photo');
                 $uniqueId = uniqid();
                 $fileName = $uniqueId . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads/student/image', $fileName, 'public');
+                $filePathurl = 'uploads/student/document/' . $fileName;
+                $filePath = Storage::disk('b2')->put($filePathurl, $file);
+                
             }
-         
+
             $roles = $request->user()->roles->pluck('name');
             if ($roles->contains('owner')) {
-                $numInscription = StudentNumInscription::where('etab_uuid',$etab_uuid)->firstOrFail();
-            }else{
-                $numInscription = StudentNumInscription::where('etab_uuid',$request->user()->branch_uuid)->firstOrFail();
+                $numInscription = StudentNumInscription::where('etab_uuid', $etab_uuid)->firstOrFail();
+            } else {
+                $numInscription = StudentNumInscription::where('etab_uuid', $request->user()->branch_uuid)->firstOrFail();
             }
+
             $currentYear = Carbon::now()->year;
             $training_level = strtoupper(mb_substr($request->training_level, 0, 1));
-            $num = $numInscription->inscription_num+1;
+            $num = $numInscription->inscription_num + 1;
             $inscription_number = $training_level . $num . '/' . $currentYear;
             $responsableJson = json_encode($request->responsable);
 
@@ -141,7 +146,7 @@ class StudentController extends Controller
                 $request->address,
                 $request->email,
                 $responsableJson,
-                $filePath,
+                $filePath,  
                 $request->training_duration,
                 $request->sector,
                 $request->filières_formation,
@@ -156,8 +161,7 @@ class StudentController extends Controller
                 $request->date_start_at,
                 $request->date_fin_at
             );
-    
-        
+
             $student = Student::create(array_merge(
                 ['uuid' => (string) Str::uuid()],
                 $data->toArray(),
@@ -166,19 +170,21 @@ class StudentController extends Controller
                     'updated_at' => now()->timezone('Africa/Casablanca')
                 ]
             ));
+
             $student->assignRole('student');
 
             $numInscription->update([
-                'inscription_num'=> $num,
+                'inscription_num' => $num,
                 'updated_at' => now()->timezone('Africa/Casablanca')
             ]);
 
             return response()->json(['message' => 'L\'étudiant a été enregistré avec succès'], 200);
-
+            
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
         }
     }
+
 
     public function update(StudentRequest $request, $student_uuid) {
 

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DISK', 'local'),
+    'default' => env('FILESYSTEM_DISK', 'b2'),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,10 +38,10 @@ return [
 
         'b2' => [
             'driver'         => 'b2',
-            'accountId'      => env('BACKBLAZE_ACCOUNT_ID'),
-            'applicationKey' => env('BACKBLAZE_APPLICATION_KEY'),
-            'bucketName'     => env('BACKBLAZE_BUCKET_NAME'),
-            'bucketId'       => env('BACKBLAZE_BUCKET_ID'),
+            'accountId'      => env('BACKBLAZE_B2_ACCOUNT_ID'),
+            'applicationKey' => env('BACKBLAZE_B2_APPLICATION_KEY'),
+            'bucketName'     => env('BACKBLAZE_B2_BUCKET'),
+            'bucketId'       => env('BACKBLAZE_B2_BUCKET_ID'),
         ],
 
         'public' => [

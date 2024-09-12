@@ -82,9 +82,11 @@ class TimetableController extends Controller
             $file = $request->file('name_file');
             $uniqueId = uniqid();
             $fileName = $uniqueId . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('uploads/timetables', $fileName, 'public');
+            $filePathurl = 'uploads/timetables/' . $fileName;
+            $filePath = Storage::disk('b2')->put($filePathurl, $file);
+            
             $data = new TimetableDataObject($request->title, $request->group_uuid, $filePath);
-    
+            
             Timetable::create(array_merge(
                 ['uuid' => (string) Str::uuid()],
                 $data->toArray(),
@@ -131,7 +133,7 @@ class TimetableController extends Controller
 
         try {
             $timetable = Timetable::where('uuid', $timetable_uuid)->firstOrFail();
-            Storage::disk('public')->delete($timetable->name_file);
+            Storage::disk('b2')->delete($timetable->name_file);
             $timetable->delete();
 
             return response()->json(['message' => 'Emploi du temps supprimé avec succès'], 200);

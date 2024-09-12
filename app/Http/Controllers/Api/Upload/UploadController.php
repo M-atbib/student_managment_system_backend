@@ -24,11 +24,11 @@ class UploadController extends Controller
             if($action == "student")
             {
                 $data = Student::where('uuid', $student_timetable_uuid)->firstOrFail();
+                $filePathurl = 'uploads/student/image/' . $fileName;
+                $filePath = Storage::disk('b2')->put($filePathurl, $file);
 
-                $filePath = $file->storeAs('uploads/student/image', $fileName, 'public');
-
-                if ($data->photo && Storage::disk('public')->exists($data->photo)) {
-                    Storage::disk('public')->delete($data->photo);
+                if ($data->photo && Storage::disk('b2')->exists($data->photo)) {
+                    Storage::disk('b2')->delete($data->photo);
                 }
 
                 $data->update(['photo' => $filePath,'updated_at' => now()->timezone('Africa/Casablanca')]);
@@ -36,13 +36,14 @@ class UploadController extends Controller
             }elseif($action == "timetable"){
                 $data = Timetable::where('uuid', $student_timetable_uuid)->firstOrFail();
 
-                $filePath = $file->storeAs('uploads/timetables', $fileName, 'public');
+                $filePathurl = 'uploads/timetables/' . $fileName;
+                $filePath = Storage::disk('b2')->put($filePathurl, $file);  
 
-                if ($data->name_file && Storage::disk('public')->exists($data->name_file)) {
-                    Storage::disk('public')->delete($data->name_file);
+                if ($data->name_file && Storage::disk('b2')->exists($data->name_file)) {
+                    Storage::disk('b2')->delete($data->name_file);
                 }
 
-                $data->update(['name_file' => $filePath,'updated_at' => now()->timezone('Africa/Casablanca')]);
+                $data->update(['name_file' => $filePath, 'updated_at' => now()->timezone('Africa/Casablanca')]);
             }
             
             return response()->json(['message' => 'Mis à jour avec succès'], 201);
