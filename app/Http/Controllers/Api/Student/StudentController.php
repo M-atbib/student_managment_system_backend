@@ -120,21 +120,10 @@ class StudentController extends Controller
                 
             }
 
-            $roles = $request->user()->roles->pluck('name');
-            if ($roles->contains('owner')) {
-                $numInscription = StudentNumInscription::where('etab_uuid', $etab_uuid)->firstOrFail();
-            } else {
-                $numInscription = StudentNumInscription::where('etab_uuid', $request->user()->branch_uuid)->firstOrFail();
-            }
-
-            $currentYear = Carbon::now()->year;
-            $training_level = strtoupper(mb_substr($request->training_level, 0, 1));
-            $num = $numInscription->inscription_num + 1;
-            $inscription_number = $training_level . $num . '/' . $currentYear;
             $responsableJson = json_encode($request->responsable);
 
             $data = new StudentDataObject(
-                $inscription_number,
+                $request->inscription_number,
                 $request->CIN,
                 $request->id_massar,
                 $request->full_name,
@@ -173,10 +162,10 @@ class StudentController extends Controller
 
             $student->assignRole('student');
 
-            $numInscription->update([
-                'inscription_num' => $num,
-                'updated_at' => now()->timezone('Africa/Casablanca')
-            ]);
+            // $numInscription->update([
+            //     'inscription_num' => $num,
+            //     'updated_at' => now()->timezone('Africa/Casablanca')
+            // ]);
 
             return response()->json(['message' => 'L\'étudiant a été enregistré avec succès'], 200);
             
@@ -194,12 +183,6 @@ class StudentController extends Controller
             $student = Student::where('uuid', $student_uuid)->firstOrFail();
             
             $inscription_number = $student->inscription_number;
-
-            if($student->training_level != $request->training_level)
-            {
-                $new_letter = strtoupper(mb_substr($request->training_level, 0, 1));
-                $inscription_number = $new_letter . mb_substr($student->inscription_number, 1);
-            }
 
             $responsableJson = json_encode($request->responsable);
 

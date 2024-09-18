@@ -50,6 +50,7 @@ class StudentRequest extends FormRequest
     if ($this->isMethod('post')) {            
         $rules['photo'] = 'nullable|file|mimes:png,jpeg,jpg|max:4096';
         $rules['CIN'] = 'nullable|string|unique:students,CIN';
+        $rules['inscription_number'] = 'nullable|string|unique:students,CIN';
         $rules['id_massar'] = 'nullable|string|unique:students,id_massar';
         $rules['email'] = 'nullable|email|unique:students,email';
     }
@@ -58,6 +59,7 @@ class StudentRequest extends FormRequest
         $uuid = $this->route('student_uuid'); 
         $rules['CIN'] = 'nullable|string|unique:students,CIN,' . $uuid . ',uuid';
         $rules['id_massar'] = 'nullable|string|unique:students,id_massar,' . $uuid . ',uuid';
+        $rules['inscription_number'] = 'nullable|string|unique:students,CIN,' . $uuid . ',uuid';
         $rules['email'] = 'nullable|email|unique:students,email,' . $uuid . ',uuid';
     }
 

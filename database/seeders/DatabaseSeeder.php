@@ -154,7 +154,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'elmalloukiatiqa@groupeelhourria.com', 
                 'role' => 'coiffure', 
                 'branch' => 'Atlas Academy Coiffure Gueliz',
-                'password' => 'elmalloukiatiq123',
+                'password' => 'elmalloukiatiqa123',
             ],
             [
                 'name' => 'Hadda ali Nadia', 

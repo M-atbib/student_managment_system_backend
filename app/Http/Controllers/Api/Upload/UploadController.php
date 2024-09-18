@@ -27,8 +27,8 @@ class UploadController extends Controller
                 $filePathurl = 'uploads/student/image/' . $fileName;
                 $filePath = Storage::disk('b2')->put($filePathurl, $file);
 
-                if ($data->photo && Storage::disk('b2')->exists($data->photo)) {
-                    Storage::disk('b2')->delete($data->photo);
+                if ($data->photo && Storage::disk('b2')->exists($data->name_file)) {
+                    Storage::disk('b2')->delete($data->name_file);
                 }
 
                 $data->update(['photo' => $filePath,'updated_at' => now()->timezone('Africa/Casablanca')]);
